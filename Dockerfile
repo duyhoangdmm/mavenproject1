@@ -1,21 +1,14 @@
-# Bước 1: Dùng image Maven để build project
-FROM maven:3.9.6-eclipse-temurin-17 AS build
 
-# Copy toàn bộ source code vào container
-COPY . /app
-WORKDIR /app
+FROM tomcat:11.0-jdk17
 
-# Build project (sinh ra file jar trong target/)
-RUN mvn clean package -DskipTests
 
-# Bước 2: Dùng image Java để chạy app
-FROM eclipse-temurin:17-jdk-alpine
+RUN rm -rf /usr/local/tomcat/webapps/*
 
-# Copy file jar từ bước build sang image final
-COPY --from=build /app/target/*.jar app.jar
 
-# Cổng mà app sẽ chạy
+COPY target/Ex1.war /usr/local/tomcat/webapps/ROOT.war
+
+
 EXPOSE 9999
 
-# Lệnh chạy app
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+CMD ["catalina.sh", "run"]
