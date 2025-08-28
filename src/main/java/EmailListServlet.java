@@ -7,11 +7,11 @@ import jakarta.servlet.http.*;
 import murach.business.User;
 import murach.data.UserDB;
 
-public class EmailListServlet extends HttpServlet {
+public class EmailListServlet extends HttpServlet  {
 
     @Override
-    protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, 
+                          HttpServletResponse response) 
                           throws ServletException, IOException {
 
         String url = "/index.html";
@@ -19,33 +19,49 @@ public class EmailListServlet extends HttpServlet {
         // get current action
         String action = request.getParameter("action");
         if (action == null) {
-            action = "join";   // default action
+            action = "join";  // default action
         }
 
-        // perform action and set URL to appropriate page
+        // perform action and set URL
         if (action.equals("join")) {
-            url = "/index.html";   // the "join" page
+            url = "/index.html";    
         }
-        else if (action.equals("add")) {
+        else if (action.equals("add")) {                
             // get parameters from the request
             String firstName = request.getParameter("firstName");
             String lastName = request.getParameter("lastName");
             String email = request.getParameter("email");
+            String dateOfBirth = request.getParameter("dateOfBirth");
+            String heardFrom = request.getParameter("heardFrom");
+            String contactVia = request.getParameter("contactVia");
+            boolean wantsUpdates = (request.getParameter("wantsUpdates") != null);
+            boolean emailOK = (request.getParameter("emailOK") != null);
 
-            // store data in User object and save User object in db
-            User user = new User(firstName, lastName, email);
+            // store data in User object
+            User user = new User();
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setEmail(email);
+            user.setDateOfBirth(dateOfBirth);
+            user.setHeardFrom(heardFrom);
+            user.setContactVia(contactVia);
+            user.setWantsUpdates(wantsUpdates);
+            user.setEmailOK(emailOK);
+
+            // save user
             UserDB.insert(user);
 
-            // set User object in request object and set URL
+            // set User object in request
             request.setAttribute("user", user);
             url = "/thanks.jsp";   // the "thanks" page
         }
-
-        // forward request and response objects to specified URL
+        
+        // forward request
         getServletContext()
             .getRequestDispatcher(url)
             .forward(request, response);
-    }
+    }    
+
     @Override
     protected void doGet(HttpServletRequest request, 
                          HttpServletResponse response) 
